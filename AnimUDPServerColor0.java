@@ -10,7 +10,8 @@ public class AnimUDPServerColor0 {
             int clientPort; // クライアントのポート番号
             String fname;
 
-            // if(args.length >= 1){
+	    // ファイル名はクライアントで指定
+	    // if(args.length >= 1){
             //    fname = args[0]; // コマンドラインで指定されている場合
             // } else {
             //    fname = "bane.raw"; // 指定されていない場合は bane.raw
