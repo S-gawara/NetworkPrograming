@@ -6,7 +6,7 @@ import java.awt.image.*;
 
 class AnimUDPClientColor0 {
 public static void main(String[] args){
-    AppFrame3 f = new AppFrame3(args[0]);
+    AppFrame3 f = new AppFrame3(args[0], args[1]);
     f.setSize(640,480);
     f.addWindowListener(new WindowAdapter(){
     @Override public void windowClosing(WindowEvent e){
@@ -18,9 +18,11 @@ public static void main(String[] args){
 
 class AppFrame3 extends Frame {
     String hostname;
+    String fname;
     ImageSocket2 imgsock = null;
-    AppFrame3(String hostname){
+    AppFrame3(String hostname, String fname){
         this.hostname = hostname;
+	this.fname = fname;
     }
     @Override public void update(Graphics g){
         paint(g);
@@ -31,7 +33,7 @@ class AppFrame3 extends Frame {
         if(img != null)
         g.drawImage(img, 10, 50, 480, 360, this);
         } else {
-            imgsock = new ImageSocket2(hostname);
+            imgsock = new ImageSocket2(hostname, fname);
         }
         repaint(1);
     }
@@ -53,18 +55,17 @@ class ImageSocket2 {
     DatagramPacket ackPacket;
 
     boolean fin = false; /**********/ // 終了フラグ
-    ImageSocket2(String hostname){
+    ImageSocket2(String hostname, String fname){
         buf = new byte[160*120*3];
         bImage=new BufferedImage(160, 120, BufferedImage.TYPE_3BYTE_BGR);
-        byte request[] = "REQUEST".getBytes();
+        byte request[] = fname.getBytes();
         ack = "Ack".getBytes(); // Ack の準備
 
         try {
             socket = new DatagramSocket(); // ソケットの作成
             // 送信データ用 DatagramPacket の作成
             serverAddress = InetAddress.getByName(hostname);
-            DatagramPacket sendPacket = new DatagramPacket(request,
-            request.length, serverAddress, port);
+            DatagramPacket sendPacket = new DatagramPacket(request,request.length, serverAddress, port);
             ackPacket = new DatagramPacket(ack, ack.length,serverAddress, port); // Ack の作成
             // 受信データ用 DatagramPacket の作成 (3 つ，offset を指定)
             // receivePacket1 = new DatagramPacket(buf, 160*120*0, 160*120);
