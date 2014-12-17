@@ -46,6 +46,7 @@ class ImageSocket2 {
     byte buf[]; // バッファ
     int port = 8001;
     byte ack[]; // Ack
+    int count = 0;
 
     // SetDateを用いる
     DatagramPacket receivePacket;
@@ -74,7 +75,7 @@ class ImageSocket2 {
 	    // for(int i = 0; i < 48; i++){
 	    //    recivePacket[i] = new DatagramPacket(buf, 1200*i, 1200);
             // }
-	    receivePacket = new DatagramPacket(buf, 0, 1200)
+	    receivePacket = new DatagramPacket(buf, 0, 1200);
 
             socket.setSoTimeout(3000); // タイムアウトの設定 (3 秒)
             socket.send(sendPacket); // REQUEST の送信
@@ -107,7 +108,7 @@ class ImageSocket2 {
 	    for(;;){
                 receivePacket.setData(buf, offset, maxsize - offset);
 		socket.receive(receivePacket);
-		socket.send(ackePacket);
+		socket.send(ackPacket);
 		if(buf[0] < 0) break;
 		offset += receivePacket.getLength();
 		if(offset >= maxsize) break;
@@ -135,6 +136,10 @@ class ImageSocket2 {
                     bImage.setRGB(x, y, pixel);
                 }
             }
+	    // フレーム数を送信
+	    count++;
+	    ack = Integer.toString(count).getBytes();
+	    ackPacket.setData(ack, 0, ack.length);
             socket.send(ackPacket); // receivePacket3 の Ack の送信 (描画後)
         }
         catch(Exception e){
