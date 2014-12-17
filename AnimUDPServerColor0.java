@@ -10,11 +10,11 @@ public class AnimUDPServerColor0 {
             int clientPort; // クライアントのポート番号
             String fname;
 
-            if(args.length >= 1){
-                fname = args[0]; // コマンドラインで指定されている場合
-            } else {
-                fname = "bane.raw"; // 指定されていない場合は bane.raw
-            }
+            // if(args.length >= 1){
+            //    fname = args[0]; // コマンドラインで指定されている場合
+            // } else {
+            //    fname = "bane.raw"; // 指定されていない場合は bane.raw
+            // }
 
             // 送信用 DatagramPacket
             byte buf[] = new byte[1200];
@@ -30,6 +30,8 @@ public class AnimUDPServerColor0 {
 
             while(true){
                 socket.receive(receivePacket); // Request の受信
+		// Requestからファイル名の取得
+		fname = new String(req);
                 clientAddress = receivePacket.getAddress();
                 clientPort = receivePacket.getPort();
                 socket.send(receivePacket); // Echo back（Ack）
