@@ -17,7 +17,7 @@ public class AnimUDPServerColor0 {
             }
 
             // 送信用 DatagramPacket
-            byte buf[] = new byte[160*120];
+            byte buf[] = new byte[1200];
             DatagramPacket sendPacket = new DatagramPacket(buf, buf.length);
 
             // 受信用 DatagramPacket
@@ -37,16 +37,20 @@ public class AnimUDPServerColor0 {
                 // sendPacket の IPaddress，PortNo，データ長設定
                 sendPacket.setAddress(clientAddress);
                 sendPacket.setPort(clientPort);
-                sendPacket.setLength(160*120);
+                sendPacket.setLength(1200);
 
                 biStream = new BufferedInputStream(new FileInputStream(fname));
 
                 for(;;){ // 永久ループ
-                    biStream.read(buf, 0, 160*120); // ファイルから読み込み
-                    socket.send(sendPacket); // クライアントに送信
-                    socket.receive(receivePacket); // Ack の受信
-                    if(buf[0] < 0) break; // 終了判定
-                }
+		    for(int i = 0; i < 48; i++){
+                        biStream.read(buf, 0, 1200); // ファイルから読み込み
+                        socket.send(sendPacket); // クライアントに送信
+                        socket.receive(receivePacket); // Ack の受信
+                        if(buf[0] < 0) break; // 終了判定
+                    }
+		    if(buf[0] < 0) break;
+	            socket.receive(receivePacket);
+		}    
                 biStream.close();
             }
             // socket.close();
