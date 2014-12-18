@@ -50,9 +50,6 @@ class ImageSocket2 {
 
     // SetDateを用いる
     DatagramPacket receivePacket;
-    // DatagramPacket receivePacket1; // 受信データ 1
-    // DatagramPacket receivePacket2; // 受信データ 2
-    // DatagramPacket receivePacket3; // 受信データ 3
     DatagramPacket ackPacket;
 
     boolean fin = false; /**********/ // 終了フラグ
@@ -68,13 +65,6 @@ class ImageSocket2 {
             serverAddress = InetAddress.getByName(hostname);
             DatagramPacket sendPacket = new DatagramPacket(request,request.length, serverAddress, port);
             ackPacket = new DatagramPacket(ack, ack.length,serverAddress, port); // Ack の作成
-            // 受信データ用 DatagramPacket の作成 (3 つ，offset を指定)
-            // receivePacket1 = new DatagramPacket(buf, 160*120*0, 160*120);
-            // receivePacket2 = new DatagramPacket(buf, 160*120*1, 160*120);
-            // receivePacket3 = new DatagramPacket(buf, 160*120*2, 160*120);
-	    // for(int i = 0; i < 48; i++){
-	    //    recivePacket[i] = new DatagramPacket(buf, 1200*i, 1200);
-            // }
 	    receivePacket = new DatagramPacket(buf, 0, 1200);
 
             socket.setSoTimeout(3000); // タイムアウトの設定 (3 秒)
@@ -93,18 +83,6 @@ class ImageSocket2 {
 	    int maxsize = 160 * 120 *3;
 	    int offset = 0;
 
-            // socket.receive(receivePacket1); // 画像データの受信
-            // socket.send(ackPacket); // receivePacket1 の Ack の送信
-            // if(buf[0] < 0){ // 終了判定（Ack 送信後)
-            //     socket.close();
-            //     System.out.println("Done.");
-            //     fin = true; /**********/
-            //     return null;
-            // }
-            // socket.receive(receivePacket2); // 画像データの受信
-            // socket.send(ackPacket); // receivePacket2 の Ack の送信
-            // socket.receive(receivePacket3); // 画像データの受信
-
 	    for(;;){
                 receivePacket.setData(buf, offset, maxsize - offset);
 		socket.receive(receivePacket);
@@ -114,12 +92,6 @@ class ImageSocket2 {
 		if(offset >= maxsize) break;
 	    }
 
-	    // for(int i = 0; i < 48; i++){
-	    //    socket.receive(receivePacket[0]); //画像データの受信
-	    //	socket.send(ackePacket);
-	    //	if(buf[0] < 0) break;
-            // }
-
 	    if(buf[0] < 0){
 		    socket.close();
 		    System.out.println("Done");
@@ -127,6 +99,7 @@ class ImageSocket2 {
 		    return null;
             }
 
+	    // イメージの作成
             for(y = 0; y < 120; y++){
                 for(x = 0; x < 160; x++){
                     r = (int)buf[y * 160 * 3 + x * 3 + 0] * 2;
