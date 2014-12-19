@@ -48,9 +48,11 @@ class ImageSocket2 {
     byte ack[]; // Ack
     String fname;
     int count = 0;
+    int w, h;
+    byte bufw[];
 
     // SetDateを用いる
-    DatagramPacket receivePacket;
+    DatagramPacket receivePacket, receivePacket2;
     DatagramPacket ackPacket;
 
     boolean fin = false; /**********/ // 終了フラグ
@@ -65,14 +67,24 @@ class ImageSocket2 {
             socket = new DatagramSocket(); // ソケットの作成
             // 送信データ用 DatagramPacket の作成
             serverAddress = InetAddress.getByName(hostname);
+
             DatagramPacket sendPacket = new DatagramPacket(request,request.length, serverAddress, port);
             ackPacket = new DatagramPacket(ack, ack.length,serverAddress, port); // Ack の作成
 	    receivePacket = new DatagramPacket(buf, 0, 1200);
+	    receivePacket2 = new DatagramPacket(bufw, 0, 1200);
 
             socket.setSoTimeout(3000); // タイムアウトの設定 (3 秒)
             socket.send(sendPacket); // REQUEST の送信
-            socket.receive(receivePacket); // 応答の受信(wとh)
+            socket.receive(receivePacket); // 応答の受信
             receivePacket.setLength(1200); // 受信可能サイズの再設定
+
+	    System.out.println("get!");
+
+	    // wの受信
+	    socket.receive(receivePacket2);
+	    String with = new String(bufw, 0, receivePacket2.getLength());
+	    w = Integer.parseInt(with);
+	    System.out.println("w: " + w);
 
         }
         catch(Exception e){
@@ -113,9 +125,9 @@ class ImageSocket2 {
                 }
             }
 	    // フレーム数を送信
-	    // count++;
-	    // ack = Integer.toString(count).getBytes();
-	    // ackPacket.setData(ack, 0, ack.length);
+	    count++;
+	    ack = Integer.toString(count).getBytes();
+	    ackPacket.setData(ack, 0, ack.length);
             socket.send(ackPacket); // receivePacket3 の Ack の送信 (描画後)
         }
         catch(Exception e){
