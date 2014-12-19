@@ -46,6 +46,7 @@ class ImageSocket2 {
     byte buf[]; // バッファ
     int port = 8001;
     byte ack[]; // Ack
+    String fname;
     int count = 0;
 
     // SetDateを用いる
@@ -56,6 +57,7 @@ class ImageSocket2 {
     ImageSocket2(String hostname, String fname){
         buf = new byte[160*120*3];
         bImage=new BufferedImage(160, 120, BufferedImage.TYPE_3BYTE_BGR);
+
         byte request[] = fname.getBytes();
         ack = "Ack".getBytes(); // Ack の準備
 
@@ -69,8 +71,9 @@ class ImageSocket2 {
 
             socket.setSoTimeout(3000); // タイムアウトの設定 (3 秒)
             socket.send(sendPacket); // REQUEST の送信
-            socket.receive(receivePacket); // 応答の受信
+            socket.receive(receivePacket); // 応答の受信(wとh)
             receivePacket.setLength(1200); // 受信可能サイズの再設定
+
         }
         catch(Exception e){
             System.out.println("Exception : " + e);
@@ -80,7 +83,7 @@ class ImageSocket2 {
         if(fin) return null; /**********/
         try {
             int x,y,pixel,r,g,b;
-	    int maxsize = 160 * 120 *3;
+	    int maxsize = 160 * 120 * 3;
 	    int offset = 0;
 
 	    for(;;){
@@ -110,9 +113,9 @@ class ImageSocket2 {
                 }
             }
 	    // フレーム数を送信
-	    count++;
-	    ack = Integer.toString(count).getBytes();
-	    ackPacket.setData(ack, 0, ack.length);
+	    // count++;
+	    // ack = Integer.toString(count).getBytes();
+	    // ackPacket.setData(ack, 0, ack.length);
             socket.send(ackPacket); // receivePacket3 の Ack の送信 (描画後)
         }
         catch(Exception e){
