@@ -11,12 +11,11 @@ public class AnimUDPServerColor0 {
 	    String fname = "null";
 	    int count = 0;
 
-	    /* ファイル情報
+	    // ファイル情報
 	    int m = 0; // max
 	    int w = 0; // with
 	    int h = 0; // high
 	    int f = 0; // frame
-	    */
 	
 	    // ファイル情報のbuf
 	    byte fbuf[] = new byte[20];
